@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 
@@ -29,11 +30,13 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class QuartzQuickLook implements QuickLook {
+public final class QuartzQuickLook extends ProxyController implements QuickLook {
     private static final Logger log = Logger.getLogger(QuartzQuickLook.class);
 
     private final List<QLPreviewItem> previews
             = new ArrayList<QLPreviewItem>();
+
+    private QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
 
     @Override
     public void select(final List<Local> files) {
@@ -70,30 +73,19 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public boolean isOpen() {
-        return QLPreviewPanel.sharedPreviewPanelExists()
-                && QLPreviewPanel.sharedPreviewPanel().isVisible();
-    }
-
-    @Override
-    public void willBeginQuickLook() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set datasource for panel %s", panel));
-        }
-        panel.setDataSource(model.id());
+        return panel.isVisible();
     }
 
     @Override
     public void open() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set datasource for panel %s", panel));
+        }
+        panel.setDataSource(model.id());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Order front panel %s", panel));
         }
         panel.makeKeyAndOrderFront(null);
-        if(null == panel.dataSource()) {
-            log.warn("Do not reload data yet because datasource is not yet setup. Focus has probably changed to another application since");
-            return;
-        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data for panel %s", panel));
         }
@@ -102,16 +94,11 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void close() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Order out panel %s", panel));
         }
         panel.setDataSource(null);
         panel.orderOut(null);
-    }
-
-    @Override
-    public void didEndQuickLook() {
         if(log.isDebugEnabled()) {
             log.debug("Clear previews");
         }

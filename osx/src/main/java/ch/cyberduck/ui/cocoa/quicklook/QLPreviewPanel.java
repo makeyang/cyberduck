@@ -87,6 +87,11 @@ public abstract class QLPreviewPanel extends NSPanel {
     public abstract void updateController();
 
     /**
+     * The current first responder accepting to control the preview panel.
+     */
+    public abstract org.rococoa.ID currentController();
+
+    /**
      * @abstract Asks the Preview Panel to reload its data from its data source.<br>
      * @discussion This method does not refresh the visible item if it has not changed.<br>
      * Original signature : <code>-(void)reloadData</code><br>

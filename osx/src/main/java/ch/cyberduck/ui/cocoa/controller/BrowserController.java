@@ -1076,7 +1076,7 @@ public class BrowserController extends WindowController
      */
     @Override
     public void beginPreviewPanelControl(QLPreviewPanel panel) {
-        quicklook.willBeginQuickLook();
+        quicklook.open();
     }
 
     /**
@@ -1088,7 +1088,7 @@ public class BrowserController extends WindowController
      */
     @Override
     public void endPreviewPanelControl(QLPreviewPanel panel) {
-        quicklook.didEndQuickLook();
+        quicklook.close();
     }
 
     @Action
@@ -3311,8 +3311,6 @@ public class BrowserController extends WindowController
      */
     @Override
     public void invalidate() {
-        quicklook.close();
-
         bookmarkTable.setDelegate(null);
         bookmarkTable.setDataSource(null);
         bookmarkModel.invalidate();
